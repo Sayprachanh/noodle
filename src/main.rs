@@ -38,29 +38,28 @@ fn workspace_mode() -> io::Result<()>{
     //io::stdout().flush().unwrap();
 
     let file_path = ".noodle_history";
+  
+    //if file !exist = create else open the file
+    let mut file = fs::OpenOptions::new()
+            .create(true).append(true).open(file_path)?;
 
+    writeln!(&mut file, "{}", "start section")?;
+    
     loop {
         let mut content = String::new();
         io::stdin().read_line(&mut content).expect("fail to read line (content)");
      
-        //if file !exist = create else open the file
-        let mut file = fs::OpenOptions::new()
-            .create(true).append(true).open(file_path)?;
-
-        writeln!(&mut file, "{}", "start section")?;
         file.write_all(content.as_bytes())?;
-        
+
         //exit
         if content.trim() == "exit"{
             writeln!(&mut file, "{}", "end Section")?;
             println!("complete work");
             break;
-        } 
+        }
 
 
     }
-    
-    println!("file written");
     Ok(())
     
 }
