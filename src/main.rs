@@ -3,7 +3,7 @@ use std::fs;
 
 
 
-pub fn welcome(){
+pub fn run_prog(){
 
     println!("
         ================================== \n
@@ -22,7 +22,7 @@ pub fn welcome(){
     
         let check = s.trim();// remove whitespace (\n, \r) from input str
         if check == "noodle"{
-            workspace_mode();
+            let _ = workspace_mode();
         }else if check == "clean"{
             cleaning_mode();
         }else{
@@ -34,20 +34,35 @@ pub fn welcome(){
 }
 
 fn workspace_mode() -> io::Result<()>{
-    println!("Entering Workspace (Noodle) Mode");
-    
+    println!("Entering Workspace (Noodle) Mode | type (exit) to leave");
+    //io::stdout().flush().unwrap();
 
     let file_path = ".noodle_history";
 
-    let mut content = String::new();
-    io::stdin().read_line(&mut content).expect("fail to read line (content)");
+    loop {
+        let mut content = String::new();
+        io::stdin().read_line(&mut content).expect("fail to read line (content)");
+     
+        //if file !exist = create else open the file
+        let mut file = fs::OpenOptions::new()
+            .create(true).append(true).open(file_path)?;
+
+        writeln!(&mut file, "{}", "start section")?;
+        file.write_all(content.as_bytes())?;
+        
+        //exit
+        if content.trim() == "exit"{
+            writeln!(&mut file, "{}", "end Section")?;
+            println!("complete work");
+            break;
+        } 
+
+
+    }
     
-    let mut file = fs::OpenOptions::new()
-        .create(true).append(true).open(file_path)?;
-    
-    file.write_all(content.as_bytes())?;
     println!("file written");
     Ok(())
+    
 }
 
 fn cleaning_mode(){
@@ -56,7 +71,7 @@ fn cleaning_mode(){
 }
 
 fn main() {
-   welcome();
+   run_prog();
 }
 
 
